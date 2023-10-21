@@ -7,7 +7,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 // const path = require("path");
-const PORT = process.env.PORT || 3100 ;
+const PORT = process.env.PORT || 3100;
 dotenv.config();
 
 const app = express();
@@ -23,6 +23,9 @@ app.use(
   })
 );
 
+//models
+const User = require("./models/user.js");
+
 // APIs------------------------------------------
 
 //health api
@@ -32,6 +35,85 @@ app.get("/health", (req, res) => {
 
 app.get("/", (req, res) => {
   res.json({ message: "All good!" });
+});
+
+//signup api
+app.post("/api/signup", async (req, res) => {
+  try {
+    const { name, email, password } = req.body;
+    if (!password) {
+      return res.status(400).json({ message: "Password is required" });
+    }
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    let user = await User.findOne({ email });
+    if (user) {
+      return res.json({ message: "User already exists" });
+    } else {
+      const newUser = new User({
+        name,
+        email,
+        password: hashedPassword,
+      });
+      await newUser.save();
+
+      // Generate JWT
+      const jwToken = jwt.sign(newUser.toJSON(), process.env.JWT_SECRET, {
+        expiresIn: "1h",
+      });
+
+      // Assign JWT to Cookie
+      res.cookie("jwt", jwToken, {
+        httpOnly: true,
+        sameSite: "None",
+        secure: true,
+      });
+
+      // Redirect to the desired URL
+      return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+    }
+  } catch (error) {
+    // console.log(error);
+    return res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+});
+
+//login api
+app.post("/api/login", async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ email });
+    if (user) {
+      const passwordMatched = await bcrypt.compare(password, user.password);
+      if (passwordMatched) {
+        const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+          expiresIn: "1h",
+        });
+        res.cookie("jwt", jwToken, { httpOnly: true });
+        res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+        return;
+      } else {
+        res.json({
+          status: "FAIL",
+          message: "Incorrect password",
+        });
+      }
+    } else {
+      res.json({
+        status: "FAIL",
+        message: "User does not exist",
+      });
+    }
+  } catch (error) {
+    // console.log(error);
+    res.json({
+      status: "FAIL",
+      message: "Something went wrong",
+      error,
+    });
+  }
 });
 
 app.listen(PORT, () => {
