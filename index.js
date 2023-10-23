@@ -25,6 +25,7 @@ app.use(
 
 //models
 const User = require("./models/user.js");
+const Quiz = require("./models/quiz.js");
 
 // APIs------------------------------------------
 
