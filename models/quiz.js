@@ -13,6 +13,7 @@ const questionSchema = new mongoose.Schema({
 });
 
 const quizSchema = new mongoose.Schema({
+  email: { type: String, required: true },
   quizName: { type: String, required: true },
   quizType: { type: String, required: true },
   questions: [questionSchema],

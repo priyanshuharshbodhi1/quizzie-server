@@ -12,7 +12,7 @@ dotenv.config();
 
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
 app.use(cookieParser());
@@ -66,7 +66,6 @@ app.post("/api/signup", async (req, res) => {
 
       // Assign JWT to Cookie
       res.cookie("jwt", jwToken, {
-        httpOnly: true,
         sameSite: "None",
         secure: true,
       });
@@ -93,7 +92,10 @@ app.post("/api/login", async (req, res) => {
         const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
           expiresIn: "1h",
         });
-        res.cookie("jwt", jwToken, { httpOnly: true });
+        res.cookie("jwt", jwToken, {
+          sameSite: "None",
+          secure: true,
+        });
         res.redirect(302, `${process.env.REACT_URL}/dashboard`);
         return;
       } else {
@@ -116,27 +118,72 @@ app.post("/api/login", async (req, res) => {
       error,
     });
   }
-})
+});
+
+//logout api
+app.post("/api/logout", (req, res) => {
+  // Clear the JWT token from cookies by setting an expired token
+  res.cookie("jwt", "", { expires: new Date(0) });
+
+  res.status(200).json({ message: "Logged out successfully" });
+});
 
 //Create Quiz API
 app.post("/api/createquiz", async (req, res) => {
   try {
-    console.log(req.body);
-    const { quizName, quizType, questions  } = req.body;   //, quizType, questions 
+    console.log(req.body.questions.options);
+    const { email, quizName, quizType, questions } = req.body; //, quizType, questions
     const newQuiz = new Quiz({
+      email,
       quizName,
       quizType,
       questions,
     });
     await newQuiz.save();
-    console.log("creating quiz")
-    console.log("created new quiz")
+    // console.log("creating quiz")
+    // console.log("created new quiz")
     res.json({ message: "Quiz created successfully" });
   } catch (error) {
-    res.status(500).json({ message: "An error occurred", error: error.message });
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
   }
 });
 
+//Middlewares
+const isAuthenticated = (req, res, next) => {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+
+  if (!token) {
+    return res.status(401).json({ message: "Unauthorized: No token provided" });
+  }
+  // console.log(authHeader);
+  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+    if (err) {
+      if (err.name === "TokenExpiredError") {
+        return res.status(401).json({ message: "Token expired" });
+      }
+      return res.status(403).json({ message: "Forbidden: Invalid token" });
+    }
+
+    req.user = user;
+    next();
+  });
+};
+
+//isloggedin api
+app.get("/api/isloggedin", isAuthenticated, (req, res) => {
+  // Check if the user is logged in and include the user's firstName in the response
+  if (req.user) {
+    res.json({
+      isLoggedIn: true,
+      user: { firstName: req.user.firstName, email: req.user.email },
+    });
+  } else {
+    res.json({ isLoggedIn: false });
+  }
+});
 
 app.listen(PORT, () => {
   mongoose
