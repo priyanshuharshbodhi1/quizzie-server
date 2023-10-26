@@ -12,6 +12,7 @@ dotenv.config();
 
 const app = express();
 
+app.use(express.json())
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./public"));
 app.use(cookieParser());
@@ -118,16 +119,17 @@ app.post("/api/login", async (req, res) => {
 })
 
 //Create Quiz API
-app.post("/api/create-quiz", async (req, res) => {
+app.post("/api/createquiz", async (req, res) => {
   try {
-    const { quizName, quizType,} = req.body;   //, quizType, questions 
-    console.log("creating quiz")
+    console.log(req.body);
+    const { quizName, quizType, questions  } = req.body;   //, quizType, questions 
     const newQuiz = new Quiz({
       quizName,
       quizType,
-      // questions,
+      questions,
     });
     await newQuiz.save();
+    console.log("creating quiz")
     console.log("created new quiz")
     res.json({ message: "Quiz created successfully" });
   } catch (error) {
