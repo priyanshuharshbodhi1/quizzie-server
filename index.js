@@ -186,10 +186,26 @@ app.get("/api/isloggedin", isAuthenticated, (req, res) => {
   }
 });
 
+// Analytics tab api
+app.get("/api/quizzes", async (req, res) => {
+  try {
+    const { email } = req.query;
+    const quizzes = await Quiz.find({ email });
+    res.json(quizzes);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "An error occurred", error: error.message });
+  }
+});
+
+
 //quizQuestion Route
 const quizRouter = require("./routes/quizQuestions");
 
 app.use("/api/quiz", quizRouter);
+
+
 
 app.listen(PORT, () => {
   mongoose
