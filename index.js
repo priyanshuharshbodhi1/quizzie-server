@@ -185,6 +185,12 @@ app.get("/api/isloggedin", isAuthenticated, (req, res) => {
   }
 });
 
+//quizQuestion Route
+const quizRouter = require('./routes/quizQuestions');
+
+app.use('/api/quiz', quizRouter);
+
+
 app.listen(PORT, () => {
   mongoose
     .connect(process.env.MONGODB_URL, {
