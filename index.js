@@ -115,7 +115,26 @@ app.post("/api/login", async (req, res) => {
       error,
     });
   }
+})
+
+//Create Quiz API
+app.post("/api/create-quiz", async (req, res) => {
+  try {
+    const { quizName, quizType,} = req.body;   //, quizType, questions 
+    console.log("creating quiz")
+    const newQuiz = new Quiz({
+      quizName,
+      quizType,
+      // questions,
+    });
+    await newQuiz.save();
+    console.log("created new quiz")
+    res.json({ message: "Quiz created successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "An error occurred", error: error.message });
+  }
 });
+
 
 app.listen(PORT, () => {
   mongoose

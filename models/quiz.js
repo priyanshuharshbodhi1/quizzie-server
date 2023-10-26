@@ -6,7 +6,7 @@ const optionSchema = new mongoose.Schema({
 });
 
 const questionSchema = new mongoose.Schema({
-  question: { type: String, required: true },
+  pollQuestion: { type: String, required: true },
   optionType: { type: String, required: true },
   options: {
     option1: { type: optionSchema},
