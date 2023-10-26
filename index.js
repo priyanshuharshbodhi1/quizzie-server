@@ -131,7 +131,7 @@ app.post("/api/logout", (req, res) => {
 //Create Quiz API
 app.post("/api/createquiz", async (req, res) => {
   try {
-    console.log(req.body.questions.options);
+    // console.log(req.body.questions.options);
     const { email, quizName, quizType, questions } = req.body; //, quizType, questions
     const newQuiz = new Quiz({
       email,
@@ -142,7 +142,7 @@ app.post("/api/createquiz", async (req, res) => {
     await newQuiz.save();
     // console.log("creating quiz")
     // console.log("created new quiz")
-    res.json({ message: "Quiz created successfully" });
+    res.json({ message: "Quiz created successfully", id: newQuiz._id });
   } catch (error) {
     res
       .status(500)
@@ -153,7 +153,7 @@ app.post("/api/createquiz", async (req, res) => {
 //Middlewares
 const isAuthenticated = (req, res, next) => {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(' ')[1];
+  const token = authHeader && authHeader.split(" ")[1];
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
@@ -186,10 +186,9 @@ app.get("/api/isloggedin", isAuthenticated, (req, res) => {
 });
 
 //quizQuestion Route
-const quizRouter = require('./routes/quizQuestions');
+const quizRouter = require("./routes/quizQuestions");
 
-app.use('/api/quiz', quizRouter);
-
+app.use("/api/quiz", quizRouter);
 
 app.listen(PORT, () => {
   mongoose
