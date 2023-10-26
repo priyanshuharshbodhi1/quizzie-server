@@ -138,6 +138,7 @@ app.post("/api/createquiz", async (req, res) => {
       quizName,
       quizType,
       questions,
+      date: new Date(),
     });
     await newQuiz.save();
     // console.log("creating quiz")
