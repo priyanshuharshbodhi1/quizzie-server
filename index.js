@@ -90,7 +90,7 @@ app.post("/api/login", async (req, res) => {
       const passwordMatched = await bcrypt.compare(password, user.password);
       if (passwordMatched) {
         const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
-          expiresIn: "1h",
+          expiresIn: "24h",
         });
         res.cookie("jwt", jwToken, {
           sameSite: "None",
@@ -181,7 +181,7 @@ app.get("/api/isloggedin", isAuthenticated, (req, res) => {
   if (req.user) {
     res.json({
       isLoggedIn: true,
-      user: { firstName: req.user.firstName, email: req.user.email },
+      user: { email: req.user.email },
     });
   } else {
     res.json({ isLoggedIn: false });
