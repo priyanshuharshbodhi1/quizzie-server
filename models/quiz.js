@@ -8,7 +8,7 @@ const optionSchema = new mongoose.Schema({
 const questionSchema = new mongoose.Schema({
   pollQuestion: { type: Object, required: true },
   ansOption: { type: Object, required: true },
-  options: [optionSchema],
+  options: [[optionSchema]],
   timerType: { type: Object, required: true },
 });
 

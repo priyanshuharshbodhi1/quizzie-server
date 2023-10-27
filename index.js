@@ -131,8 +131,7 @@ app.post("/api/logout", (req, res) => {
 //Create Quiz API
 app.post("/api/createquiz", async (req, res) => {
   try {
-    // console.log(req.body.questions.options);
-    const { email, quizName, quizType, questions } = req.body; //, quizType, questions
+    const { email, quizName, quizType, questions } = req.body; 
     const newQuiz = new Quiz({
       email,
       quizName,
@@ -140,9 +139,12 @@ app.post("/api/createquiz", async (req, res) => {
       questions,
       date: new Date(),
     });
+    // console.log(questions[0].options[0])
+    // console.log(questions[0])
+    // console.log(questions)
+    // console.dir(questions, { depth: null });
+
     await newQuiz.save();
-    // console.log("creating quiz")
-    // console.log("created new quiz")
     res.json({ message: "Quiz created successfully", id: newQuiz._id });
   } catch (error) {
     res
