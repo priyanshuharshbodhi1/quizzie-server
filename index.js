@@ -131,7 +131,7 @@ app.post("/api/logout", (req, res) => {
 //Create Quiz API
 app.post("/api/createquiz", async (req, res) => {
   try {
-    const { email, quizName, quizType, questions } = req.body; 
+    const { email, quizName, quizType, questions } = req.body;
     const newQuiz = new Quiz({
       email,
       quizName,
@@ -201,13 +201,25 @@ app.get("/api/quizzes", async (req, res) => {
   }
 });
 
+//for impressions ++
+app.post("/api/quiz/:quizId/impression", async (req, res) => {
+  try {
+    const quiz = await Quiz.findById(req.params.quizId);
+    if (!quiz) {
+      return res.status(404).json({ message: "Quiz not found" });
+    }
+    quiz.impressions = quiz.impressions + 1;
+    await quiz.save();
+    res.json({ message: "Impression recorded" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
 
 //quizQuestion Route
 const quizRouter = require("./routes/quizQuestions");
 
 app.use("/api/quiz", quizRouter);
-
-
 
 app.listen(PORT, () => {
   mongoose
