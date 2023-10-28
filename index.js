@@ -216,6 +216,26 @@ app.post("/api/quiz/:quizId/impression", async (req, res) => {
   }
 });
 
+//for quizData
+app.get('/api/userData', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    // Find all quizzes created by the user
+    const quizzes = await Quiz.find({ email: email });
+
+    // Calculate total quizzes, questions, and impressions
+    const totalQuizzes = quizzes.length;
+    const totalQuestions = quizzes.reduce((sum, quiz) => sum + quiz.questions.length, 0);
+    const totalImpressions = quizzes.reduce((sum, quiz) => sum + quiz.impressions, 0);
+
+    res.json({ quizzes: totalQuizzes, questions: totalQuestions, impressions: totalImpressions });
+  } catch (error) {
+    console.error('Error fetching user data:', error);
+    res.status(500).json({ error: 'An error occurred while fetching user data' });
+  }
+});
+
 //quizQuestion Route
 const quizRouter = require("./routes/quizQuestions");
 
