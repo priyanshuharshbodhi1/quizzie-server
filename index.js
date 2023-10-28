@@ -216,7 +216,7 @@ app.post("/api/quiz/:quizId/impression", async (req, res) => {
   }
 });
 
-//for quizData
+//for quizData in dashboard Screen
 app.get('/api/userData', async (req, res) => {
   const { email } = req.query;
 
@@ -233,6 +233,23 @@ app.get('/api/userData', async (req, res) => {
   } catch (error) {
     console.error('Error fetching user data:', error);
     res.status(500).json({ error: 'An error occurred while fetching user data' });
+  }
+});
+
+app.get('/api/trendingQuizzes', async (req, res) => {
+  const { email } = req.query;
+
+  try {
+    // Find top 10 quizzes created by the user, sorted by impressions in descending order
+    const quizzes = await Quiz.find({ email: email })
+      .sort({ impressions: -1 })
+      .limit(10)
+      .select('quizName impressions date');
+
+    res.json(quizzes);
+  } catch (error) {
+    console.error('Error fetching trending quizzes:', error);
+    res.status(500).json({ error: 'An error occurred while fetching trending quizzes' });
   }
 });
 
