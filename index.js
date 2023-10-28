@@ -217,7 +217,7 @@ app.post("/api/quiz/:quizId/impression", async (req, res) => {
 });
 
 //for quizData in dashboard Screen
-app.get('/api/userData', async (req, res) => {
+app.get("/api/userData", async (req, res) => {
   const { email } = req.query;
 
   try {
@@ -226,17 +226,33 @@ app.get('/api/userData', async (req, res) => {
 
     // Calculate total quizzes, questions, and impressions
     const totalQuizzes = quizzes.length;
-    const totalQuestions = quizzes.reduce((sum, quiz) => sum + quiz.questions.length, 0);
-    const totalImpressions = quizzes.reduce((sum, quiz) => sum + quiz.impressions, 0);
+    const totalQuestions = quizzes.reduce((sum, quiz) => {
+      return (
+        sum +
+        quiz.questions.reduce((questionSum, questionSet) => {
+          return questionSum + Object.keys(questionSet.pollQuestion).length;
+        }, 0)
+      );
+    }, 0);
+    const totalImpressions = quizzes.reduce(
+      (sum, quiz) => sum + quiz.impressions,
+      0
+    );
 
-    res.json({ quizzes: totalQuizzes, questions: totalQuestions, impressions: totalImpressions });
+    res.json({
+      quizzes: totalQuizzes,
+      questions: totalQuestions,
+      impressions: totalImpressions,
+    });
   } catch (error) {
-    console.error('Error fetching user data:', error);
-    res.status(500).json({ error: 'An error occurred while fetching user data' });
+    console.error("Error fetching user data:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching user data" });
   }
 });
 
-app.get('/api/trendingQuizzes', async (req, res) => {
+app.get("/api/trendingQuizzes", async (req, res) => {
   const { email } = req.query;
 
   try {
@@ -244,12 +260,14 @@ app.get('/api/trendingQuizzes', async (req, res) => {
     const quizzes = await Quiz.find({ email: email })
       .sort({ impressions: -1 })
       .limit(6)
-      .select('quizName impressions date');
+      .select("quizName impressions date");
 
     res.json(quizzes);
   } catch (error) {
-    console.error('Error fetching trending quizzes:', error);
-    res.status(500).json({ error: 'An error occurred while fetching trending quizzes' });
+    console.error("Error fetching trending quizzes:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while fetching trending quizzes" });
   }
 });
 
