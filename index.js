@@ -271,6 +271,43 @@ app.get("/api/trendingQuizzes", async (req, res) => {
   }
 });
 
+//answerOption update api
+app.post('/api/quiz/:quizId/submit', async (req, res) => {
+  const { quizId } = req.params;
+  const { userAnswers } = req.body;
+
+  try {
+    const quiz = await Quiz.findById(quizId);
+
+    if (!quiz) {
+      return res.status(404).json({ error: 'Quiz not found' });
+    }
+
+    if (quiz.quizType !== "Poll Type") {
+      Object.keys(userAnswers).forEach((questionIndex) => {
+        if (userAnswers[questionIndex] === 1) {
+          if (quiz.correctAnswers[questionIndex]) {
+            quiz.correctAnswers[questionIndex]++;
+          } else {
+            quiz.correctAnswers[questionIndex] = 1;
+          }
+        }
+      });
+    }
+
+    quiz.impressions++;
+
+    await quiz.save();
+
+    res.json({ message: 'Quiz answers submitted successfully' });
+  } catch (error) {
+    console.error('Error submitting quiz answers:', error);
+    res.status(500).json({ error: 'An error occurred while submitting quiz answers' });
+  }
+});
+
+
+
 //quizQuestion Route
 const quizRouter = require("./routes/quizQuestions");
 

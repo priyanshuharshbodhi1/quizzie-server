@@ -18,6 +18,7 @@ const quizSchema = new mongoose.Schema({
   impressions: { type: Number, default: 0 },
   quizName: { type: String, required: true },
   quizType: { type: String, required: true },
+  correctAnswers: { type: Object, default: {} },
   questions: [questionSchema],
 });
 
