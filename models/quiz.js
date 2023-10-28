@@ -9,7 +9,7 @@ const questionSchema = new mongoose.Schema({
   pollQuestion: { type: Object, required: true },
   ansOption: { type: Object, required: true },
   options: [[optionSchema]],
-  timerType: { type: Object, required: true },
+  timerType: { type: Object,},
 });
 
 const quizSchema = new mongoose.Schema({
