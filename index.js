@@ -243,7 +243,7 @@ app.get('/api/trendingQuizzes', async (req, res) => {
     // Find top 10 quizzes created by the user, sorted by impressions in descending order
     const quizzes = await Quiz.find({ email: email })
       .sort({ impressions: -1 })
-      .limit(10)
+      .limit(6)
       .select('quizName impressions date');
 
     res.json(quizzes);
