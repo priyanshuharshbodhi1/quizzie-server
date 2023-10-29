@@ -85,6 +85,7 @@ app.post("/api/signup", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    console.log(email);
     const user = await User.findOne({ email });
     if (user) {
       const passwordMatched = await bcrypt.compare(password, user.password);
