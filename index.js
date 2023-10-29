@@ -165,14 +165,13 @@ const isAuthenticated = (req, res, next) => {
   // console.log(authHeader);
   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
     if (err) {
+      console.log("error:", err);
+      console.log(token);
       if (err.name === "TokenExpiredError") {
         return res.status(401).json({ message: "Token expired" });
       }
       return res.status(403).json({ message: "Forbidden: Invalid token" });
     }
-    console.log("error:",err)
-    console.log(token);
-
 
     req.user = user;
     next();
@@ -276,7 +275,7 @@ app.get("/api/trendingQuizzes", async (req, res) => {
 });
 
 //answerOption update api
-app.post('/api/quiz/:quizId/submit', async (req, res) => {
+app.post("/api/quiz/:quizId/submit", async (req, res) => {
   const { quizId } = req.params;
   const { userAnswers } = req.body;
 
@@ -284,7 +283,7 @@ app.post('/api/quiz/:quizId/submit', async (req, res) => {
     const quiz = await Quiz.findById(quizId);
 
     if (!quiz) {
-      return res.status(404).json({ error: 'Quiz not found' });
+      return res.status(404).json({ error: "Quiz not found" });
     }
 
     if (quiz.quizType !== "Poll Type") {
@@ -303,14 +302,14 @@ app.post('/api/quiz/:quizId/submit', async (req, res) => {
 
     await quiz.save();
 
-    res.json({ message: 'Quiz answers submitted successfully' });
+    res.json({ message: "Quiz answers submitted successfully" });
   } catch (error) {
-    console.error('Error submitting quiz answers:', error);
-    res.status(500).json({ error: 'An error occurred while submitting quiz answers' });
+    console.error("Error submitting quiz answers:", error);
+    res
+      .status(500)
+      .json({ error: "An error occurred while submitting quiz answers" });
   }
 });
-
-
 
 //quizQuestion Route
 const quizRouter = require("./routes/quizQuestions");
