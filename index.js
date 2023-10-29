@@ -181,7 +181,7 @@ const isAuthenticated = (req, res, next) => {
 //isloggedin api
 app.get("/api/isloggedin",  (req, res) => {  //isAuthenticated,
   // Check if the user is logged in and include the user's firstName in the response
-  if (req.user) {
+  if (!req.user) {
     res.json({
       isLoggedIn: true,
       user: { email: req.user.email },
