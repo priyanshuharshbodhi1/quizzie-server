@@ -61,7 +61,7 @@ app.post("/api/signup", async (req, res) => {
 
       // Generate JWT
       const jwToken = jwt.sign(newUser.toJSON(), process.env.JWT_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "12h",
       });
 
       // // Assign JWT to Cookie
@@ -88,7 +88,7 @@ app.post("/api/signup", async (req, res) => {
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    console.log(email);
+    // console.log(email);
     const user = await User.findOne({ email });
     if (user) {
       const passwordMatched = await bcrypt.compare(password, user.password);
@@ -171,8 +171,8 @@ const isAuthenticated = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
-  console.log("token:", token)
-  console.log("authHeader:", authHeader)
+  // console.log("token:", token)
+  // console.log("authHeader:", authHeader)
 
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
@@ -340,3 +340,4 @@ app.listen(PORT, () => {
     .then(() => console.log(`Server running on http://localhost:${PORT}`))
     .catch((error) => console.error(error));
 });
+ 
