@@ -74,7 +74,7 @@ app.post("/api/signup", async (req, res) => {
       return res.json({ token: jwToken });
 
       // Redirect to the desired URL
-      return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+      // return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
     }
   } catch (error) {
     // console.log(error);
@@ -103,7 +103,7 @@ app.post("/api/login", async (req, res) => {
           path: "/"
         });
         return res.json({ token: jwToken });
-        res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+        // res.redirect(302, `${process.env.REACT_URL}/dashboard`);
         return;
       } else {
         res.json({
@@ -127,10 +127,16 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+// //logout api
+// app.post("/api/logout", (req, res) => {
+//   // Clear the JWT token from cookies by setting an expired token
+//   res.cookie("jwt", "", { expires: new Date(0) });
+
+//   res.status(200).json({ message: "Logged out successfully" });
+// });
+
 //logout api
 app.post("/api/logout", (req, res) => {
-  // Clear the JWT token from cookies by setting an expired token
-  res.cookie("jwt", "", { expires: new Date(0) });
 
   res.status(200).json({ message: "Logged out successfully" });
 });
