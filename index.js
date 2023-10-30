@@ -159,6 +159,9 @@ const isAuthenticated = (req, res, next) => {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(" ")[1];
 
+  console.log("token:", token)
+  console.log("authHeader:", authHeader)
+
   if (!token) {
     return res.status(401).json({ message: "Unauthorized: No token provided" });
   }
@@ -179,7 +182,7 @@ const isAuthenticated = (req, res, next) => {
 };
 
 //isloggedin api
-app.get("/api/isloggedin",  (req, res) => {  //isAuthenticated,
+app.get("/api/isloggedin",isAuthenticated,  (req, res) => {  
   // Check if the user is logged in and include the user's firstName in the response
   if (!req.user) {
     res.json({
