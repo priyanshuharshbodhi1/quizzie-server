@@ -64,13 +64,14 @@ app.post("/api/signup", async (req, res) => {
         expiresIn: "1h",
       });
 
-      // Assign JWT to Cookie
-      res.cookie("jwt", jwToken, {
-        sameSite: "None",
-        secure: true,
-        httpOnly: false, 
-        path: "/",
-      });
+      // // Assign JWT to Cookie
+      // res.cookie("jwt", jwToken, {
+      //   sameSite: "None",
+      //   secure: true,
+      //   httpOnly: false, 
+      //   path: "/",
+      // });
+      return res.json({ token: jwToken });
 
       // Redirect to the desired URL
       return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
@@ -101,6 +102,7 @@ app.post("/api/login", async (req, res) => {
           httpOnly: false,
           path: "/"
         });
+        return res.json({ token: jwToken });
         res.redirect(302, `${process.env.REACT_URL}/dashboard`);
         return;
       } else {
