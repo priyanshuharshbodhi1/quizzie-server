@@ -68,7 +68,7 @@ app.post("/api/signup", async (req, res) => {
       res.cookie("jwt", jwToken, {
         sameSite: "None",
         secure: true,
-        httpOnly: true,
+        httpOnly: false,
       });
 
       // Redirect to the desired URL
@@ -97,7 +97,7 @@ app.post("/api/login", async (req, res) => {
         res.cookie("jwt", jwToken, {
           sameSite: "None",
           secure: true,
-          httpOnly: true,
+          httpOnly: false,
         });
         res.redirect(302, `${process.env.REACT_URL}/dashboard`);
         return;
