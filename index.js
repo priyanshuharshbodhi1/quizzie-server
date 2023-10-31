@@ -44,13 +44,18 @@ app.post("/api/signup", async (req, res) => {
   try {
     const { name, email, password } = req.body;
     if (!password) {
-      return res.status(400).json({ message: "Password is required" });
+      return res
+        .status(400)
+        .json({ status: "FAIL", message: "Password is required" });
     }
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let user = await User.findOne({ email });
     if (user) {
-      return res.json({ message: "User already exists" });
+      return res.json({
+        status: "FAIL",
+        message: "User already exists for the Email Id.",
+      });
     } else {
       const newUser = new User({
         name,
@@ -64,13 +69,6 @@ app.post("/api/signup", async (req, res) => {
         expiresIn: "12h",
       });
 
-      // // Assign JWT to Cookie
-      // res.cookie("jwt", jwToken, {
-      //   sameSite: "None",
-      //   secure: true,
-      //   httpOnly: false, 
-      //   path: "/",
-      // });
       return res.json({ token: jwToken });
 
       // Redirect to the desired URL
@@ -100,11 +98,10 @@ app.post("/api/login", async (req, res) => {
           sameSite: "None",
           secure: true,
           httpOnly: false,
-          path: "/"
+          path: "/",
         });
         return res.json({ token: jwToken });
         // res.redirect(302, `${process.env.REACT_URL}/dashboard`);
-        return;
       } else {
         res.json({
           status: "FAIL",
@@ -114,7 +111,7 @@ app.post("/api/login", async (req, res) => {
     } else {
       res.json({
         status: "FAIL",
-        message: "User does not exist",
+        message: "User does not exist for this Email Id",
       });
     }
   } catch (error) {
@@ -127,17 +124,8 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
-// //logout api
-// app.post("/api/logout", (req, res) => {
-//   // Clear the JWT token from cookies by setting an expired token
-//   res.cookie("jwt", "", { expires: new Date(0) });
-
-//   res.status(200).json({ message: "Logged out successfully" });
-// });
-
 //logout api
 app.post("/api/logout", (req, res) => {
-
   res.status(200).json({ message: "Logged out successfully" });
 });
 
@@ -194,7 +182,7 @@ const isAuthenticated = (req, res, next) => {
 };
 
 //isloggedin api
-app.get("/api/isloggedin",isAuthenticated,  (req, res) => {  
+app.get("/api/isloggedin", isAuthenticated, (req, res) => {
   // Check if the user is logged in and include the user's firstName in the response
   if (req.user) {
     res.json({
@@ -340,4 +328,3 @@ app.listen(PORT, () => {
     .then(() => console.log(`Server running on http://localhost:${PORT}`))
     .catch((error) => console.error(error));
 });
- 
