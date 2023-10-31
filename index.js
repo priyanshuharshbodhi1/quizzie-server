@@ -48,6 +48,12 @@ app.post("/api/signup", async (req, res) => {
         .status(400)
         .json({ status: "FAIL", message: "Password is required" });
     }
+    if (!name) {
+      return res
+        .status(400)
+        .json({ status: "FAIL", message: "Username is required" });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
 
     let user = await User.findOne({ email });
