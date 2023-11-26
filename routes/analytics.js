@@ -2,8 +2,6 @@ const express = require("express");
 const router = express.Router();
 const Quiz = require("../models/quiz.js");
 
-// Add your analytics routes here (quizzes, userData, trendingQuizzes)
-
 // Analytics tab api
 router.get("/quizzes", async (req, res) => {
   try {
@@ -72,5 +70,4 @@ router.get("/trendingQuizzes", async (req, res) => {
   }
 });
 
-// Export the router
 module.exports = router;
