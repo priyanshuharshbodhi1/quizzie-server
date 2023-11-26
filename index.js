@@ -39,101 +39,105 @@ app.get("/", (req, res) => {
   res.json({ message: "All good!" });
 });
 
-//signup api
-app.post("/api/signup", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    if (!password) {
-      return res
-        .status(400)
-        .json({ status: "FAIL", message: "Password is required" });
-    }
-    if (!name) {
-      return res
-        .status(400)
-        .json({ status: "FAIL", message: "Username is required" });
-    }
+//Routes
+const authRoutes = require('./routes/auth');
+app.use('/api', authRoutes);
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+// //signup api
+// app.post("/api/signup", async (req, res) => {
+//   try {
+//     const { name, email, password } = req.body;
+//     if (!password) {
+//       return res
+//         .status(400)
+//         .json({ status: "FAIL", message: "Password is required" });
+//     }
+//     if (!name) {
+//       return res
+//         .status(400)
+//         .json({ status: "FAIL", message: "Username is required" });
+//     }
 
-    let user = await User.findOne({ email });
-    if (user) {
-      return res.json({
-        status: "FAIL",
-        message: "User already exists for the Email Id.",
-      });
-    } else {
-      const newUser = new User({
-        name,
-        email,
-        password: hashedPassword,
-      });
-      await newUser.save();
+//     const hashedPassword = await bcrypt.hash(password, 10);
 
-      // Generate JWT
-      const jwToken = jwt.sign(newUser.toJSON(), process.env.JWT_SECRET, {
-        expiresIn: "12h",
-      });
+//     let user = await User.findOne({ email });
+//     if (user) {
+//       return res.json({
+//         status: "FAIL",
+//         message: "User already exists for the Email Id.",
+//       });
+//     } else {
+//       const newUser = new User({
+//         name,
+//         email,
+//         password: hashedPassword,
+//       });
+//       await newUser.save();
 
-      return res.json({ token: jwToken });
+//       // Generate JWT
+//       const jwToken = jwt.sign(newUser.toJSON(), process.env.JWT_SECRET, {
+//         expiresIn: "12h",
+//       });
 
-      // Redirect to the desired URL
-      // return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
-    }
-  } catch (error) {
-    // console.log(error);
-    return res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
-  }
-});
+//       return res.json({ token: jwToken });
 
-//login api
-app.post("/api/login", async (req, res) => {
-  try {
-    const { email, password } = req.body;
-    // console.log(email);
-    const user = await User.findOne({ email });
-    if (user) {
-      const passwordMatched = await bcrypt.compare(password, user.password);
-      if (passwordMatched) {
-        const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
-          expiresIn: "24h",
-        });
-        res.cookie("jwt", jwToken, {
-          sameSite: "None",
-          secure: true,
-          httpOnly: false,
-          path: "/",
-        });
-        return res.json({ token: jwToken });
-        // res.redirect(302, `${process.env.REACT_URL}/dashboard`);
-      } else {
-        res.json({
-          status: "FAIL",
-          message: "Incorrect password",
-        });
-      }
-    } else {
-      res.json({
-        status: "FAIL",
-        message: "User does not exist for this Email Id",
-      });
-    }
-  } catch (error) {
-    // console.log(error);
-    res.json({
-      status: "FAIL",
-      message: "Something went wrong",
-      error,
-    });
-  }
-});
+//       // Redirect to the desired URL
+//       // return res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+//     }
+//   } catch (error) {
+//     // console.log(error);
+//     return res
+//       .status(500)
+//       .json({ message: "An error occurred", error: error.message });
+//   }
+// });
 
-//logout api
-app.post("/api/logout", (req, res) => {
-  res.status(200).json({ message: "Logged out successfully" });
-});
+// //login api
+// app.post("/api/login", async (req, res) => {
+//   try {
+//     const { email, password } = req.body;
+//     // console.log(email);
+//     const user = await User.findOne({ email });
+//     if (user) {
+//       const passwordMatched = await bcrypt.compare(password, user.password);
+//       if (passwordMatched) {
+//         const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+//           expiresIn: "24h",
+//         });
+//         res.cookie("jwt", jwToken, {
+//           sameSite: "None",
+//           secure: true,
+//           httpOnly: false,
+//           path: "/",
+//         });
+//         return res.json({ token: jwToken });
+//         // res.redirect(302, `${process.env.REACT_URL}/dashboard`);
+//       } else {
+//         res.json({
+//           status: "FAIL",
+//           message: "Incorrect password",
+//         });
+//       }
+//     } else {
+//       res.json({
+//         status: "FAIL",
+//         message: "User does not exist for this Email Id",
+//       });
+//     }
+//   } catch (error) {
+//     // console.log(error);
+//     res.json({
+//       status: "FAIL",
+//       message: "Something went wrong",
+//       error,
+//     });
+//   }
+// });
+
+// //logout api
+// app.post("/api/logout", (req, res) => {
+//   res.status(200).json({ message: "Logged out successfully" });
+// });
 
 //Create Quiz API
 app.post("/api/createquiz", async (req, res) => {
