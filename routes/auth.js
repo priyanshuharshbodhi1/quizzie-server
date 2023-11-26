@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
+const isAuthenticated = require("../middlewares/isAuthenticated");
 
 //signup api
 router.post("/signup", async (req, res) => {
@@ -100,17 +101,17 @@ router.post("/logout", (req, res) => {
   res.status(200).json({ message: "Logged out successfully" });
 });
 
-// //isloggedin api
-// router.get("/isloggedin", isAuthenticated, (req, res) => {
-//   // Check if the user is logged in and include the user's firstName in the response
-//   if (req.user) {
-//     res.json({
-//       isLoggedIn: true,
-//       user: { email: req.user.email },
-//     });
-//   } else {
-//     res.json({ isLoggedIn: false });
-//   }
-// });
+//isloggedin api
+router.get("/isloggedin", isAuthenticated, (req, res) => {
+  // Check if the user is logged in and include the user's firstName in the response
+  if (req.user) {
+    res.json({
+      isLoggedIn: true,
+      user: { email: req.user.email },
+    });
+  } else {
+    res.json({ isLoggedIn: false });
+  }
+});
 
 module.exports = router;

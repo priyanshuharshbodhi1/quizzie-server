@@ -164,45 +164,45 @@ app.post("/api/createquiz", async (req, res) => {
   }
 });
 
-//Middlewares
-const isAuthenticated = (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
+// //Middlewares
+// const isAuthenticated = (req, res, next) => {
+//   const authHeader = req.headers.authorization;
+//   const token = authHeader && authHeader.split(" ")[1];
 
-  // console.log("token:", token)
-  // console.log("authHeader:", authHeader)
+//   // console.log("token:", token)
+//   // console.log("authHeader:", authHeader)
 
-  if (!token) {
-    return res.status(401).json({ message: "Unauthorized: No token provided" });
-  }
-  // console.log(authHeader);
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      console.log("error:", err);
-      // console.log(token);
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).json({ message: "Token expired" });
-      }
-      return res.status(403).json({ message: "Forbidden: Invalid token" });
-    }
+//   if (!token) {
+//     return res.status(401).json({ message: "Unauthorized: No token provided" });
+//   }
+//   // console.log(authHeader);
+//   jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
+//     if (err) {
+//       console.log("error:", err);
+//       // console.log(token);
+//       if (err.name === "TokenExpiredError") {
+//         return res.status(401).json({ message: "Token expired" });
+//       }
+//       return res.status(403).json({ message: "Forbidden: Invalid token" });
+//     }
 
-    req.user = user;
-    next();
-  });
-};
+//     req.user = user;
+//     next();
+//   });
+// };
 
-//isloggedin api
-app.get("/api/isloggedin", isAuthenticated, (req, res) => {
-  // Check if the user is logged in and include the user's firstName in the response
-  if (req.user) {
-    res.json({
-      isLoggedIn: true,
-      user: { email: req.user.email },
-    });
-  } else {
-    res.json({ isLoggedIn: false });
-  }
-});
+// //isloggedin api
+// app.get("/api/isloggedin", isAuthenticated, (req, res) => {
+//   // Check if the user is logged in and include the user's firstName in the response
+//   if (req.user) {
+//     res.json({
+//       isLoggedIn: true,
+//       user: { email: req.user.email },
+//     });
+//   } else {
+//     res.json({ isLoggedIn: false });
+//   }
+// });
 
 // Analytics tab api
 app.get("/api/quizzes", async (req, res) => {
