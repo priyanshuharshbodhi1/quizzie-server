@@ -41,7 +41,16 @@ app.get("/", (req, res) => {
 
 //Routes
 const authRoutes = require('./routes/auth');
+const analyticsRoutes = require('./routes/analytics');
+const quizQuestions = require("./routes/quizQuestions");
+const quiz = require("./routes/quiz");
+
+
 app.use('/api', authRoutes);
+app.use('/api', analyticsRoutes);
+app.use("/api/quiz", quizQuestions);
+app.use('/api', quiz);
+
 
 // //signup api
 // app.post("/api/signup", async (req, res) => {
@@ -139,30 +148,30 @@ app.use('/api', authRoutes);
 //   res.status(200).json({ message: "Logged out successfully" });
 // });
 
-//Create Quiz API
-app.post("/api/createquiz", async (req, res) => {
-  try {
-    const { email, quizName, quizType, questions } = req.body;
-    const newQuiz = new Quiz({
-      email,
-      quizName,
-      quizType,
-      questions,
-      date: new Date(),
-    });
-    // console.log(questions[0].options[0])
-    // console.log(questions[0])
-    // console.log(questions)
-    // console.dir(questions, { depth: null });
+// //Create Quiz API
+// app.post("/api/createquiz", async (req, res) => {
+//   try {
+//     const { email, quizName, quizType, questions } = req.body;
+//     const newQuiz = new Quiz({
+//       email,
+//       quizName,
+//       quizType,
+//       questions,
+//       date: new Date(),
+//     });
+//     // console.log(questions[0].options[0])
+//     // console.log(questions[0])
+//     // console.log(questions)
+//     // console.dir(questions, { depth: null });
 
-    await newQuiz.save();
-    res.json({ message: "Quiz created successfully", id: newQuiz._id });
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
-  }
-});
+//     await newQuiz.save();
+//     res.json({ message: "Quiz created successfully", id: newQuiz._id });
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "An error occurred", error: error.message });
+//   }
+// });
 
 // //Middlewares
 // const isAuthenticated = (req, res, next) => {
@@ -204,130 +213,128 @@ app.post("/api/createquiz", async (req, res) => {
 //   }
 // });
 
-// Analytics tab api
-app.get("/api/quizzes", async (req, res) => {
-  try {
-    const { email } = req.query;
-    const quizzes = await Quiz.find({ email });
-    res.json(quizzes);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "An error occurred", error: error.message });
-  }
-});
+// // Analytics tab api
+// app.get("/api/quizzes", async (req, res) => {
+//   try {
+//     const { email } = req.query;
+//     const quizzes = await Quiz.find({ email });
+//     res.json(quizzes);
+//   } catch (error) {
+//     res
+//       .status(500)
+//       .json({ message: "An error occurred", error: error.message });
+//   }
+// });
 
-//for impressions ++
-app.post("/api/quiz/:quizId/impression", async (req, res) => {
-  try {
-    const quiz = await Quiz.findById(req.params.quizId);
-    if (!quiz) {
-      return res.status(404).json({ message: "Quiz not found" });
-    }
-    quiz.impressions = quiz.impressions + 1;
-    await quiz.save();
-    res.json({ message: "Impression recorded" });
-  } catch (error) {
-    res.status(500).json({ message: "Server error" });
-  }
-});
+// //for impressions ++
+// app.post("/api/quiz/:quizId/impression", async (req, res) => {
+//   try {
+//     const quiz = await Quiz.findById(req.params.quizId);
+//     if (!quiz) {
+//       return res.status(404).json({ message: "Quiz not found" });
+//     }
+//     quiz.impressions = quiz.impressions + 1;
+//     await quiz.save();
+//     res.json({ message: "Impression recorded" });
+//   } catch (error) {
+//     res.status(500).json({ message: "Server error" });
+//   }
+// });
 
-//for quizData in dashboard Screen
-app.get("/api/userData", async (req, res) => {
-  const { email } = req.query;
+// //for quizData in dashboard Screen
+// app.get("/api/userData", async (req, res) => {
+//   const { email } = req.query;
 
-  try {
-    // Find all quizzes created by the user
-    const quizzes = await Quiz.find({ email: email });
+//   try {
+//     // Find all quizzes created by the user
+//     const quizzes = await Quiz.find({ email: email });
 
-    // Calculate total quizzes, questions, and impressions
-    const totalQuizzes = quizzes.length;
-    const totalQuestions = quizzes.reduce((sum, quiz) => {
-      return (
-        sum +
-        quiz.questions.reduce((questionSum, questionSet) => {
-          return questionSum + Object.keys(questionSet.pollQuestion).length;
-        }, 0)
-      );
-    }, 0);
-    const totalImpressions = quizzes.reduce(
-      (sum, quiz) => sum + quiz.impressions,
-      0
-    );
+//     // Calculate total quizzes, questions, and impressions
+//     const totalQuizzes = quizzes.length;
+//     const totalQuestions = quizzes.reduce((sum, quiz) => {
+//       return (
+//         sum +
+//         quiz.questions.reduce((questionSum, questionSet) => {
+//           return questionSum + Object.keys(questionSet.pollQuestion).length;
+//         }, 0)
+//       );
+//     }, 0);
+//     const totalImpressions = quizzes.reduce(
+//       (sum, quiz) => sum + quiz.impressions,
+//       0
+//     );
 
-    res.json({
-      quizzes: totalQuizzes,
-      questions: totalQuestions,
-      impressions: totalImpressions,
-    });
-  } catch (error) {
-    console.error("Error fetching user data:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching user data" });
-  }
-});
+//     res.json({
+//       quizzes: totalQuizzes,
+//       questions: totalQuestions,
+//       impressions: totalImpressions,
+//     });
+//   } catch (error) {
+//     console.error("Error fetching user data:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while fetching user data" });
+//   }
+// });
 
-app.get("/api/trendingQuizzes", async (req, res) => {
-  const { email } = req.query;
+// app.get("/api/trendingQuizzes", async (req, res) => {
+//   const { email } = req.query;
 
-  try {
-    // Find top 10 quizzes created by the user, sorted by impressions in descending order
-    const quizzes = await Quiz.find({ email: email })
-      .sort({ impressions: -1 })
-      .limit(6)
-      .select("quizName impressions date");
+//   try {
+//     // Find top 10 quizzes created by the user, sorted by impressions in descending order
+//     const quizzes = await Quiz.find({ email: email })
+//       .sort({ impressions: -1 })
+//       .limit(6)
+//       .select("quizName impressions date");
 
-    res.json(quizzes);
-  } catch (error) {
-    console.error("Error fetching trending quizzes:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while fetching trending quizzes" });
-  }
-});
+//     res.json(quizzes);
+//   } catch (error) {
+//     console.error("Error fetching trending quizzes:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while fetching trending quizzes" });
+//   }
+// });
 
-//answerOption update api
-app.post("/api/quiz/:quizId/submit", async (req, res) => {
-  const { quizId } = req.params;
-  const { userAnswers } = req.body;
+// //answerOption update api
+// app.post("/api/quiz/:quizId/submit", async (req, res) => {
+//   const { quizId } = req.params;
+//   const { userAnswers } = req.body;
 
-  try {
-    const quiz = await Quiz.findById(quizId);
+//   try {
+//     const quiz = await Quiz.findById(quizId);
 
-    if (!quiz) {
-      return res.status(404).json({ error: "Quiz not found" });
-    }
+//     if (!quiz) {
+//       return res.status(404).json({ error: "Quiz not found" });
+//     }
 
-    if (quiz.quizType !== "Poll Type") {
-      Object.keys(userAnswers).forEach((questionIndex) => {
-        if (userAnswers[questionIndex] === 1) {
-          if (quiz.correctAnswers[questionIndex]) {
-            quiz.correctAnswers[questionIndex]++;
-          } else {
-            quiz.correctAnswers[questionIndex] = 1;
-          }
-        }
-      });
-    }
+//     if (quiz.quizType !== "Poll Type") {
+//       Object.keys(userAnswers).forEach((questionIndex) => {
+//         if (userAnswers[questionIndex] === 1) {
+//           if (quiz.correctAnswers[questionIndex]) {
+//             quiz.correctAnswers[questionIndex]++;
+//           } else {
+//             quiz.correctAnswers[questionIndex] = 1;
+//           }
+//         }
+//       });
+//     }
 
-    quiz.impressions++;
+//     quiz.impressions++;
 
-    await quiz.save();
+//     await quiz.save();
 
-    res.json({ message: "Quiz answers submitted successfully" });
-  } catch (error) {
-    console.error("Error submitting quiz answers:", error);
-    res
-      .status(500)
-      .json({ error: "An error occurred while submitting quiz answers" });
-  }
-});
+//     res.json({ message: "Quiz answers submitted successfully" });
+//   } catch (error) {
+//     console.error("Error submitting quiz answers:", error);
+//     res
+//       .status(500)
+//       .json({ error: "An error occurred while submitting quiz answers" });
+//   }
+// });
 
 //quizQuestion Route
-const quizRouter = require("./routes/quizQuestions");
 
-app.use("/api/quiz", quizRouter);
 
 app.listen(PORT, () => {
   mongoose
