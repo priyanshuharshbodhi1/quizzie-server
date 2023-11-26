@@ -4,6 +4,7 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
 const isAuthenticated = require("../middlewares/isAuthenticated");
+const generateToken = require('../utils/generateToken');
 
 //signup api
 router.post("/signup", async (req, res) => {
@@ -37,9 +38,7 @@ router.post("/signup", async (req, res) => {
       await newUser.save();
 
       // Generate JWT
-      const jwToken = jwt.sign(newUser.toJSON(), process.env.JWT_SECRET, {
-        expiresIn: "12h",
-      });
+      const jwToken = generateToken(newUser);
 
       return res.json({ token: jwToken });
 
@@ -63,9 +62,10 @@ router.post("/login", async (req, res) => {
     if (user) {
       const passwordMatched = await bcrypt.compare(password, user.password);
       if (passwordMatched) {
-        const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
-          expiresIn: "24h",
-        });
+        // const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
+        //   expiresIn: "24h",
+        // });
+        const jwToken = generateToken(user);
         res.cookie("jwt", jwToken, {
           sameSite: "None",
           secure: true,
