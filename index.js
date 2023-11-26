@@ -1,8 +1,8 @@
 const express = require("express");
-const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
 const dotenv = require("dotenv");
 const cors = require("cors");
+const connectDB = require('./config/db'); 
 const PORT = process.env.PORT || 3100;
 dotenv.config();
 
@@ -27,24 +27,17 @@ app.get("/health", (req, res) => {
 });
 
 //Routes
-const authRoutes = require('./routes/auth');
-const analyticsRoutes = require('./routes/analytics');
+const authRoutes = require("./routes/auth");
+const analyticsRoutes = require("./routes/analytics");
 const quizQuestions = require("./routes/quizQuestions");
 const quiz = require("./routes/quiz");
 
-
-app.use('/api', authRoutes);
-app.use('/api', analyticsRoutes);
+app.use("/api", authRoutes);
+app.use("/api", analyticsRoutes);
 app.use("/api/quiz", quizQuestions);
-app.use('/api', quiz);
-
+app.use("/api", quiz);
 
 app.listen(PORT, () => {
-  mongoose
-    .connect(process.env.MONGODB_URL, {
-      useNewUrlParser: true,
-      useUnifiedTopology: true,
-    })
-    .then(() => console.log(`Server running on http://localhost:${PORT}`))
-    .catch((error) => console.error(error));
+  connectDB();
+  console.log(`Server running on http://localhost:${PORT}`);
 });
