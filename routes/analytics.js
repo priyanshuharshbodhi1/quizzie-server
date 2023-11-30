@@ -55,7 +55,7 @@ router.get("/trendingQuizzes", async (req, res) => {
   const { email } = req.query;
 
   try {
-    // Find top 10 quizzes created by the user, sorted by impressions in descending order
+    // Find top 6 quizzes created by the user, sorted by impressions in descending order
     const quizzes = await Quiz.find({ email: email })
       .sort({ impressions: -1 })
       .limit(6)

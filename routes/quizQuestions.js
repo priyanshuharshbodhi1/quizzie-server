@@ -13,7 +13,6 @@ router.get("/:quizId", async (req, res) => {
     }
 
     res.json(quiz);
-    // console.log(quiz);
   } catch (error) {
     res
       .status(500)

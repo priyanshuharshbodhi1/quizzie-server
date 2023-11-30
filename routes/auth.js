@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const User = require("../models/user.js");
 const isAuthenticated = require("../middlewares/isAuthenticated");
 const generateToken = require('../utils/generateToken');
@@ -57,23 +56,12 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    // console.log(email);
     const user = await User.findOne({ email });
     if (user) {
       const passwordMatched = await bcrypt.compare(password, user.password);
       if (passwordMatched) {
-        // const jwToken = jwt.sign(user.toJSON(), process.env.JWT_SECRET, {
-        //   expiresIn: "24h",
-        // });
         const jwToken = generateToken(user);
-        res.cookie("jwt", jwToken, {
-          sameSite: "None",
-          secure: true,
-          httpOnly: false,
-          path: "/",
-        });
         return res.json({ token: jwToken });
-        // res.redirect(302, `${process.env.REACT_URL}/dashboard`);
       } else {
         res.json({
           status: "FAIL",
@@ -103,7 +91,7 @@ router.post("/logout", (req, res) => {
 
 //isloggedin api
 router.get("/isloggedin", isAuthenticated, (req, res) => {
-  // Check if the user is logged in and include the user's firstName in the response
+  // Check if the user is logged in and include the user's email in the response
   if (req.user) {
     res.json({
       isLoggedIn: true,

@@ -23,7 +23,6 @@ router.post("/createquiz", async (req, res) => {
   }
 });
 
-
 router.delete("/:quizId", async (req, res) => {
     try {
       const quizId = req.params.quizId;
