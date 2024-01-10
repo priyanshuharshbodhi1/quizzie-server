@@ -55,7 +55,7 @@ router.post("/signup", async (req, res) => {
 //login api
 router.post("/login", async (req, res) => {
   try {
-    console.log('started')
+    // console.log('started')
     const { email, password } = req.body;
     const user = await User.findOne({ email });
     if (user) {
@@ -64,7 +64,7 @@ router.post("/login", async (req, res) => {
       if (passwordMatched) {
         
         const jwToken = generateToken(user);
-        console.log("Ended ",jwToken[0])
+        // console.log("Ended ",jwToken[0])
         
         return res.json({ token: jwToken });
       } else {
