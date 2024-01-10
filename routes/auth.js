@@ -57,10 +57,14 @@ router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
     const user = await User.findOne({ email });
+    console.log('hi')
     if (user) {
       const passwordMatched = await bcrypt.compare(password, user.password);
+      
       if (passwordMatched) {
+        
         const jwToken = generateToken(user);
+        console.log("if password matched",jwToken)
         return res.json({ token: jwToken });
       } else {
         res.json({
